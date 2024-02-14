@@ -1,0 +1,8 @@
+cat << EOF > .env
+ME="Wesley Hung"
+JWT_SECRET="greenpigjwtsecret"
+OIDC_SECRET="greenpigoidcsecret"
+SQLALCHEMY_DATABASE_URI="postgresql://pi:greenpig123456789@localhost:5432/sensors_data"
+EOF
+
+XOR PROBLEM
