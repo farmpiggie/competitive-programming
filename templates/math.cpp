@@ -1,7 +1,15 @@
 // MATH UTILITY
 ll fact[MAXFAC];
 
+ll mygcd(ll a, ll b) {
+    if (a == 0)
+        return b;
+    return mygcd(b % a, a);
+}
+
+// a ^ b mod p
 ll powmod(ll a, ll b, ll p){
+    if (b == 0) return 1;
     a %= p;
     if (a == 0) return 0;
     ll product = 1;
@@ -18,6 +26,7 @@ ll powmod(ll a, ll b, ll p){
     return product;
 }
 
+// modular inverse
 ll inv(ll a, ll p){
     return powmod(a, p-2, p);
 }
