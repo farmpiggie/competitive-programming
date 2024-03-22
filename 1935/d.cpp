@@ -25,6 +25,5 @@ int main() {
             
         }
         cout << (1ll * c * (c + 1) / 2 + c + 1) - ans << '\n';
-
     }
 }
