@@ -1,0 +1,55 @@
+#include <bits/stdc++.h>
+#define pii pair<int, int>
+#define f first
+#define s second
+using namespace std;
+
+int main() {
+	cin.tie(0)->sync_with_stdio(0);
+	int t; t = 1;
+	while (t--) {
+		int n; cin >> n;
+		vector<int> a(n);
+		for (int& x : a) cin >> x;
+		vector<vector<int>> occ(100005, vector<int>(0));
+		int k = 0;
+		for (int i = 0; i < n; i++) {
+			occ[a[i]].push_back(i);
+			k = max(k, a[i]);
+		}
+		vector<int> ans(k + 1, 0);
+		ans[0] = 1;
+		set<pii> segments;
+	   	segments.insert({0, n - 1});	
+		for (int i = 1; i <= k; i++) {
+			for (int pos : occ[i]) {
+				auto it = segments.lower_bound({pos, INT_MAX});
+				if (it == segments.begin()) {
+				//	cout << "ggs\n";
+				//	cout << "k: " << k << "\tpos: " << pos << '\n';
+					continue;
+				}// no segment with this valuei
+				// split this segment
+				--it;
+				pii left = {it->first, pos - 1};
+				pii right = {pos + 1, it->second};
+				if (left.f <= left.s) {
+					segments.insert(left);
+				}
+				if (right.f <= right.s) {
+					segments.insert(right);
+				}
+				segments.erase(it);
+			}
+			ans[i] = segments.size();
+		}
+		for (int i = 1; i <= k; i++) {
+			int ret = 0;
+			for (int j = 0; j <= k; j += i) {
+				ret += ans[j];
+			}
+			cout << ret << " ";
+		}
+		cout << '\n';
+	}
+}
