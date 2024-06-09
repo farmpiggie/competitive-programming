@@ -1,47 +1,94 @@
-// number of times the length of substring would change is at most log(n)?
-// run previous solution log(n) times
+// previous solve: for a certain type, find the LCP through binary search for segments
+// note: as k increases, f_k decreases
+// can we use this monitonic property to our advantage?
+// if k <= sqrt(n), then 0 <= LCP <= n
+// 		calculate in O(sqrt(n) * n * log(n))
+// if k >= sqrt(n), then 0 <= LCP <= sqrt(n)
+// 		for each segment from length 0 to sqrt(n), find largest k 
+// 		takes O(sqrt(n) * n) time
 #include <bits/stdc++.h>
 using namespace std;
+#define pii pair<int, int>
+#define ll long long
 
-class HashedString {
-  private:
-	// change M and B if you want
-	static const long long M = 1e9 + 9;
- 
-	static const long long B;
- 
-	// pow[i] contains B^i % M
-	static vector<long long> pow;
- 
-	// p_hash[i] is the hash of the first i characters of the given string
-	vector<long long> p_hash;
- 
-  public:
-	HashedString(const string &s) : p_hash(s.size() + 1) {
-		while (pow.size() < s.size()) { pow.push_back((pow.back() * B) % M); }
- 
-		p_hash[0] = 0;
-		for (int i = 0; i < s.size(); i++) {
-			p_hash[i + 1] = ((p_hash[i] * B) % M + s[i]) % M;
+vector<int> z_function(string s) {
+    int n = s.size();
+    vector<int> z(n);
+    int l = 0, r = 0;
+    for(int i = 1; i < n; i++) {
+        if(i < r) {
+            z[i] = min(r - i, z[i - l]);
+        }
+        while(i + z[i] < n && s[z[i]] == s[i + z[i]]) {
+            z[i]++;
+        }
+        if(i + z[i] > r) {
+            l = i;
+            r = i + z[i];
+        }
+    }
+    return z;
+}
+
+int solve(vector<int>& z, int k, int n) {
+	int best = 0;
+	int lo = 1, hi = n;
+	while (lo <= hi) {
+		int cur = 0;
+		int mi = lo + (hi - lo) / 2;
+		int i = 0;
+		while (i + mi - 1 < n) {
+			if (z[i] >= mi) {
+				cur++;
+				i += mi;
+			} else i++;
+		}
+		if (cur >= k) { // only compare to l
+			best = max(best, mi);
+			lo = mi + 1;
+		} else {
+			hi = mi - 1;
 		}
 	}
- 
-	long long get_hash(int start, int end) {
-		//start++;
-		//end++;
-		long long raw_val =
-		    (p_hash[end + 1] - (p_hash[start] * pow[end - start + 1]));
-		return (raw_val % M + M) % M;
-	}
-};
-mt19937 rng((uint32_t)chrono::steady_clock::now().time_since_epoch().count());
-vector<long long> HashedString::pow = {1};
-const ll HashedString::B = uniform_int_distribution<ll>(0, M - 1)(rng);
+	return best;
+}
 
 int main() {
 	int t; cin >> t;
 	while (t--) {
+		int n, l, r; cin >> n >> l >> r;
+		string s; cin >> s;
+		vector<int> ans(n + 1, 0);
+		vector<int> z = z_function(s);
+		//cout << "z: ";
+		//for (int i = 0; i < n; i++) cout << z[i] << ' ';
+		//cout << '\n';
+		z[0] = n;
+
+		for (int i = l; i <= (int) sqrt(n); i++) {
+			//cout << "ans[" << i << "]: " << solve(z, i, n) << '\n';
+			ans[i] = solve(z, i, n);
+		}
+
+		for (int i = 1; i <= (int) sqrt(n); i++) {
+			int j = 0;
+			int cur = 0;
+			while (j + i - 1 < n) {
+				if (z[j] >= i) {
+					cur++;
+					j += i;
+				} else j++;
+			}
+			ans[cur] = max(ans[cur], i); 
+		}
+
+		for (int i = n - 1; i >= 0; i--) {
+			if (ans[i] == 0) ans[i] = ans[i + 1];
+		}
 		
+		for (int i = l; i <= r; i++) cout << ans[i] << ' ';
+		cout << '\n';
+
 	}
 	return 0;
 }
