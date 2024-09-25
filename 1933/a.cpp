@@ -9,7 +9,19 @@ using namespace std;
 #define pii pair<int, int>
 #define pll pair<ll, ll>
 
+int t, n;
+
 int main() {
 	send help
+	cin >> t;
+	while (t--) {
+		cin >> n;
+		ll ans = 0;
+		for (int i = 0; i < n; i++) {
+			int x; cin >> x;
+			ans += abs(x);
+		}
+		cout << ans << '\n';
+	}
 	return 0;
 }

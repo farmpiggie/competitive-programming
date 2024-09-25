@@ -1,76 +1,60 @@
-#include <bits/stdc++.h>
-using namespace std;
+// Taken from https://github.com/VeryAmazed/My_Comp-Programming_Template/blob/main/Templates/point_update.cpp
+// initially from USACO.guide
 
-template <typename T>
-struct segtree {
-  int n;
-  vector<T> t;
-
-  segtree(int sz) {
-    n = sz;
-    t = vector<T>(2 * n);
+/** A data structure that can answer point update & range minimum queries. */
+template <class T> 
+struct SegTree {
+  /** The operation to use for combining two elements. (Must be associative) 
+    Used for querying (when the parent combines its two children)
+   */
+   // change as necessary
+  T query_comb(T a, T b) { 
+    return a + b;
   }
+  
+  // operation for updating element at the specified index
+  // change as necessary
+  T update_comb(T a, T b) {
+    return a + b;
+  }
+  
+  const T DEFAULT = 0;  // Default value, change as necessary
 
-  segtree(int sz, vector<T>& a) {
-    n = sz;
-    t = vector<T>(2 * n);
-    for (int i = 0; i < n; i++) {
-      t[n + i] = a[i];
+  vector<T> segtree;
+  int len;
+
+  SegTree(int len) : len(len), segtree(len * 2, DEFAULT) {}
+  
+  // look at ASSERTS to see how you should be indexing things
+  
+  /** Sets the value at ind to val. */
+  void set(int ind, T val) {
+    // assert(0 <= ind && ind < len);
+    ind += len;
+    segtree[ind] = val;
+    for (; ind > 1; ind /= 2) {
+      segtree[ind >> 1] = query_comb(segtree[ind], segtree[ind ^ 1]);
     }
-    build();
   }
-
-  void build() {  // build the tree
-    for (int i = n - 1; i > 0; --i) t[i] = combine(t[i<<1], t[i<<1|1]);
-  }
-
-  void modify(int p, const T& value) {  // set value at position p
-    for (t[p += n] = value; p > 1; p >>= 1) t[p>>1] = combine(t[p], t[p^1]);
-  }
-
-  void inc(int p, const T& value) {  // increment value at position p
-    for (t[p += n] = combine(value, t[p]); p > 1; p >>= 1) t[p>>1] = combine(t[p], t[p^1]);
-  }
-
-  T query(int l, int r) {  // query on interval [l, r]
-    r++;
-    T resl = 0, resr = 0; // TODO: initialize
-    for (l += n, r += n; l < r; l >>= 1, r >>= 1) {
-      if (l & 1) resl = combine(resl, t[l++]);
-      if (r & 1) resr = combine(resr, t[--r]);
+  
+  /** updates the value at ind to val. */
+  void update(int ind, T val) {
+    // assert(0 <= ind && ind < len);
+    ind += len;
+    segtree[ind] = update_comb(segtree[ind], val);
+    for (; ind > 1; ind /= 2) {
+      segtree[ind >> 1] = query_comb(segtree[ind], segtree[ind ^ 1]);
     }
-    return combine(resl, resr);
   }
 
-  T combine(const T& a, const T& b) {
-    return a + b; // TODO: initialize
+  /** queries the range [start, end) */
+  T query(int start, int end) {
+    // assert(0 <= start && start < len && 0 < end && end <= len);
+    T sum = DEFAULT;
+    for (start += len, end += len; start < end; start /= 2, end /= 2) {
+      if ((start & 1) != 0) { sum = query_comb(sum, segtree[start++]); }
+      if ((end & 1) != 0) { sum = query_comb(sum, segtree[--end]); }
+    }
+    return sum;
   }
 };
-
-#include <bits/stdc++.h>
-using namespace std;
-
-
-int main() {
-  int n = 20;
-  vector<int> arr;
-  for (int i = 0; i < n; i++) {
-    arr.push_back(i + 1);
-  }
-
-  segtree<int> st(n, arr);
-  for (int i = 0; i < n; i++) {
-    cout << st.query(i, i) << ' ';
-  }
-  cout << '\n';
-
-  st.modify(0, 2);
-
-  for (int i = 0; i < n; i++) {
-    cout << st.query(i, i) << ' ';
-  }
-  cout << '\n';
-
-
-  return 0;
-}

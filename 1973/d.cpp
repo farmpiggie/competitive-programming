@@ -16,6 +16,13 @@
 //		m <= n / k * max(a_i)
 //		test the first (n / k) queries in O(k) each
 //		takes O(n + n / k * k) = k time
+// EDITORIAL:
+// notice that the maximum value in the array is always going to be part of m
+// all possible values of m are multiples of said maximum value
+// trying to solve for all values of m would be O(n * k), too slow
+// realize that the length of each segment must be >= m / mx (since at the shortest it will use mx as maximum of the segment, so mx * len = m)
+// inequality that k * (m / mx) <= n (must fit k segments in), so m <= n / k * mx, so we only need to try (n/k) values k times
+// comes out to O(n + k * n/k) = O(2n)
 #include <bits/stdc++.h>
 using namespace std;
 //#define TEST
