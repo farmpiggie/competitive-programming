@@ -1,6 +1,5 @@
 // inspiration taken from https://github.com/VeryAmazed/My_Comp-Programming_Template/blob/main/Templates/number_theory.cpp, thanks Alan
 
-
 // a and b must be positive
 ll mygcd(ll a, ll b) {
     if (a == 0)
@@ -44,12 +43,12 @@ bool find_any_solution(ll a, ll b, ll c, ll &x0, ll &y0, ll &g) {
 // calculates a ^ b quickly
 // for mod exponentiation simply pass in a third parameter, m (mod), 
 // and then mod after every time you multiply
-ll binpow(ll a, ll b) {
+ll binpow(ll a, ll b, ll mod) {
     ll res = 1;
     while (b > 0) {
         if (b & 1)
-            res = res * a; // for mod exponentiation add a mod m here
-        a = a * a; // for mod exponentiation add a mod m here
+            res = (res * a) % mod; // for mod exponentiation add a mod m here
+        a = (a * a) % mod; // for mod exponentiation add a mod m here
         b >>= 1;
     }
     return res;
@@ -59,7 +58,7 @@ ll binpow(ll a, ll b) {
 // mod is prime, if m is prime x^(-1) = x^(m-2)
 ll mod_inv(ll a, ll mod){
     if(gcd(a, mod) == 1){
-        return binpow(a , mod-2);
+        return binpow(a, mod-2, mod);
     }
     else{
         return -1; // a doesn't have a mod inverse in this mod space
@@ -116,3 +115,6 @@ ll int_sqrt (ll x) {
   }
   return ans;
 }
+
+
+
