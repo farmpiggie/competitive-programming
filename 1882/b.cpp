@@ -1,49 +1,36 @@
 #include <bits/stdc++.h>
-#include <unordered_set>
-#include <unordered_map>
 using namespace std;
 
-void solve() {
-	int n; cin >> n;
-	vector<unordered_set<int>> sets;
-	unordered_map<int, int> mp;
-
-	int best = 0;
-
-	for (int i = 0; i < n; i++) {
-		int size; cin >> size;
-		unordered_set<int> tempSet;
-		for (int j = 0; j < size; j++) {
-			int k; cin >> k;
-			tempSet.insert(k);
-			mp[k]++;
-		}
-		sets.push_back(tempSet);
-	}
-	int currMax = mp.size();
-
-	for (int i = 0; i < n; i++) {
-		for (int element : sets[i]) {
-			mp[element]--;
-			if (mp[element] == 0) mp.erase(element);
-		}
-		if (mp.size() != currMax)
-			best = max(best, (int) mp.size());
-		for (int element : sets[i]) {
-			mp[element]++;
-		}
-	}
-	cout << best << endl;
-
-}
-
+#define vi vector<int>
+#define v2i vector<vi>
 
 int main() {
 	int t; cin >> t;
 	while (t--) {
-		solve();
+		int n; cin >> n;
+		vector<set<int>> a(n); 
+		map<int, int> occ;
+		for (int i = 0; i < n; i++) {
+			int k; cin >> k;
+			for (int j = 0; j < k; j++) {
+				int x; cin >> x;
+				a[i].insert(x);
+				occ[x]++;
+			}
+		}
+
+		int ans = 0;
+		// if i choose to remove a particular number, how many sets do i have left
+		for (int i = 1; i <= 50; i++) {
+			map<int, int> occ2;
+			for (int j = 0; j < n; j++) {
+				if (a[j].find(i) != a[j].end()) continue;
+				for (int x : a[j]) occ2[x]++; 
+			}
+			if (occ2.size() < occ.size()) ans = max(ans, (int) occ2.size());
+		}
+		cout << ans << '\n';
+		
 	}
-
-
 	return 0;
 }
