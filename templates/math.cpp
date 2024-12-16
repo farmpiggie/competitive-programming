@@ -1,12 +1,5 @@
 // inspiration taken from https://github.com/VeryAmazed/My_Comp-Programming_Template/blob/main/Templates/number_theory.cpp, thanks Alan
 
-// a and b must be positive
-ll mygcd(ll a, ll b) {
-    if (a == 0)
-        return b;
-    return mygcd(b % a, a);
-}
-
 // extended euclid's
 // solves ax + by = gcd(a, b)
 // a and b must be positive
@@ -39,44 +32,34 @@ bool find_any_solution(ll a, ll b, ll c, ll &x0, ll &y0, ll &g) {
     return true;
 }
 
+const ll MOD = 1e9 + 7;
 
 // calculates a ^ b quickly
-// for mod exponentiation simply pass in a third parameter, m (mod), 
-// and then mod after every time you multiply
-ll binpow(ll a, ll b, ll mod) {
-    ll res = 1;
-    while (b > 0) {
-        if (b & 1)
-            res = (res * a) % mod; // for mod exponentiation add a mod m here
-        a = (a * a) % mod; // for mod exponentiation add a mod m here
-        b >>= 1;
-    }
-    return res;
+ll binpow(ll a, ll b) {
+    if (b == 0) return 1;
+	ll res = binpow(a, b / 2);
+	res = res * res % MOD;
+	if (b % 2 == 1) res = res * a % MOD;
+	return res;
 }
 
 // find mod inverse of a number. Uses eulaer's and fermat's little theorem so only works when 
 // mod is prime, if m is prime x^(-1) = x^(m-2)
-ll mod_inv(ll a, ll mod){
-    if(gcd(a, mod) == 1){
-        return binpow(a, mod-2, mod);
-    }
-    else{
-        return -1; // a doesn't have a mod inverse in this mod space
-    }
+ll mod_inv(ll a) {
+	return binpow(a, MOD - 2);
 }
 
-// (n choose k) mod p
-// requires precalculating factorials (mod p)
-
-ll fact[MAXFAC];
-fact[0] = 1;
-for (int i = 1; i < MAXFAC; i++) {
-    fact[i] = (fact[i - 1] * i) % p;
+vector<ll> fac = {1};
+ll fact(int n) {
+	while (fac.size() <= n) {
+		fac.push_back(fac.back() * fac.size() % MOD);
+	}
+	return fac[n];
 }
 
-// calculates (nCk) % p using modular inverse
-ll nCk(ll n, ll k, ll p){
-    return ((fact[n] * mod_inv(fact[k], p) % p) * mod_inv(fact[n-k], p)) % p;
+// calculates (nCk) % MOD using modular inverse
+ll nCk(ll n, ll k){
+    return fact(n) * inv(fact(n)) % MOD * inv(fact(n - k)) % MOD;
 }
 
 // Sieve of Eratosthenes
