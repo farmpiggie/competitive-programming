@@ -1,0 +1,42 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int solve(vector<int>& a, int x) {
+	int cur = 0, res = 0;
+	int n = (int) a.size();
+	for (int i = 0; i < n; i++) {
+		cur ^= a[i];
+		if ((cur | x) == x) {
+			cur = 0;
+			res++;
+		} else if (i == n - 1) {
+			res = -1;
+		}
+	}
+	return res;
+}
+
+int main() {
+	cin.tie(0)->sync_with_stdio(0);
+	int t; cin >> t;
+	while (t--) {
+		int n, x; cin >> n >> x;
+		vector<int> a(n);
+		for (int& x : a) cin >> x;
+		int ans = solve(a, x);
+		
+		for (int b = 29; b >= 0; b--) {
+			if ((x >> b) & 1) {
+				int y = x ^ (1 << b); // flip one to zero
+				for (int c = b - 1; c >= 0; c--) {
+					if (((y >> c) & 1) == 0) {
+						y ^= (1 << c); // flip all zero bits under to one
+					}
+				}
+				ans = max(ans, solve(a, y));
+			}
+		}
+		cout << ans << '\n';
+	}
+	return 0;
+}
