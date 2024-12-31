@@ -15,10 +15,10 @@ int main() {
 			if (adj[node].size() == 0) return 0;
 			map<int, int> mp;
 			priority_queue<int, vector<int>, greater<int>> pq;
-			for (int nei : node) {
-				pq.push(nei);
+			for (int nei : adj[node]) {
+				pq.push(dfs(nei));
 			}
-			bool bad = false; // has remainder
+			bool bad = adj[node].size() == 1; // has remainder
 			while (pq.size() > 1) {
 				int x = pq.top(); pq.pop();
 				int y = pq.top(); 
@@ -29,6 +29,8 @@ int main() {
 					bad = true;
 				}
 			}
+
+//            cout << "size of node " << node + 1 << " is: " << pq.top() + bad << '\n';
 			return pq.top() + bad;
 		};
 
