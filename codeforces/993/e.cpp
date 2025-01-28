@@ -1,7 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
 
- 
 using cd = complex<double>;
 const double PI = acos(-1);
 
