@@ -1,60 +1,51 @@
-// Taken from https://github.com/VeryAmazed/My_Comp-Programming_Template/blob/main/Templates/point_update.cpp
-// initially from USACO.guide
+// basic segtree where each node stores a number
+#include <bits/stdc++.h>
+using namespace std;
 
-/** A data structure that can answer point update & range minimum queries. */
-template <class T> 
-struct SegTree {
-  /** The operation to use for combining two elements. (Must be associative) 
-    Used for querying (when the parent combines its two children)
-   */
-   // change as necessary
-  T query_comb(T a, T b) { 
-    return a + b;
-  }
-  
-  // operation for updating element at the specified index
-  // change as necessary
-  T update_comb(T a, T b) {
-    return a + b;
-  }
-  
-  const T DEFAULT = 0;  // Default value, change as necessary
+struct segtree {
+        int n;
+        vector<int> t;
 
-  vector<T> segtree;
-  int len;
+        segtree(int sz) {
+                n = sz;
+                t = vector<int>(2 * n);
+                build();
+        }
 
-  SegTree(int len) : len(len), segtree(len * 2, DEFAULT) {}
-  
-  // look at ASSERTS to see how you should be indexing things
-  
-  /** Sets the value at ind to val. */
-  void set(int ind, T val) {
-    // assert(0 <= ind && ind < len);
-    ind += len;
-    segtree[ind] = val;
-    for (; ind > 1; ind /= 2) {
-      segtree[ind >> 1] = query_comb(segtree[ind], segtree[ind ^ 1]);
-    }
-  }
-  
-  /** updates the value at ind to val. */
-  void update(int ind, T val) {
-    // assert(0 <= ind && ind < len);
-    ind += len;
-    segtree[ind] = update_comb(segtree[ind], val);
-    for (; ind > 1; ind /= 2) {
-      segtree[ind >> 1] = query_comb(segtree[ind], segtree[ind ^ 1]);
-    }
-  }
+        segtree(int sz, const vector<int>& a) {
+                n = sz;
+                t = vector<T>(2 * n);
+                for (int i = 0; i < n; i++) {
+                        t[n + i] = a[i];
+                }
+                build();
+        }
 
-  /** queries the range [start, end) */
-  T query(int start, int end) {
-    // assert(0 <= start && start < len && 0 < end && end <= len);
-    T sum = DEFAULT;
-    for (start += len, end += len; start < end; start /= 2, end /= 2) {
-      if ((start & 1) != 0) { sum = query_comb(sum, segtree[start++]); }
-      if ((end & 1) != 0) { sum = query_comb(sum, segtree[--end]); }
-    }
-    return sum;
-  }
+        void build() {
+                for (int i = n - 1; i > 0; --i) {
+                        t[i] = combine(t[i<<1], t[i<<1|1]);
+                }
+        }
+
+        // = value for assignment, += value for increment
+        void update(int p, const int& value) 
+                for (t[p += n] = value; p > 1; p >>= 1) {
+                        t[p>>1] = combine(t[p], t[p^1]);
+                }
+        }
+
+        T query(int l, int r) {  // query on interval [l, r)
+                T resl = 0, resr = 0; // TODO: change it based on what you need
+                for (l += n, r += n; l < r; l >>= 1, r >>= 1) {
+                        if (l & 1) resl = combine(resl, t[l++]);
+                        if (r & 1) resr = combine(resr, t[--r]);
+                }
+                return combine(resl, resr);
+        }
+
+        T combine(const int& a, const int& b) {
+                return a + b; // TODO: change it based on what you need 
+        }
 };
+
+

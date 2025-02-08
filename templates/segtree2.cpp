@@ -2,72 +2,47 @@
 using namespace std;
 
 struct segtree {
-  int n;
-  vector<T> t;
+	int n;
+	vector<int> t;
 
-  segtree(int sz) {
-    n = sz;
-    t = vector<T>(2 * n);
-    build();
-  }
+	segtree(int _n) {
+		n = _n;
+		t.resize(4 * n, 0);
+	}
 
-  segtree(int sz, vector<T>& a) {
-    n = sz;
-    t = vector<T>(2 * n);
-    for (int i = 0; i < n; i++) {
-      t[n + i] = a[i];
-    }
-    build();
-  }
+	int merge(int v1, int v2) {
+		return gcd(v1, v2);
+	}
 
-  void build() {  // build the tree
-    for (int i = n - 1; i > 0; --i) t[i] = combine(t[i<<1], t[i<<1|1]);
-  }
+	void update(int v, int l, int r, int p, int val) {
+		if (l + 1 == r) {
+			t[v] = val;
+                        return;
+		}
+		int m = (l + r) / 2;
+		if (p < m) update(v * 2 + 1, l, m, p, val);
+		else update(v * 2 + 2, m, r, p, val);
+	        t[v] = gcd(t[v * 2 + 1], t[v * 2 + 2]);
+        }
 
-  void modify(int p, const T& value) {  // set value at position p
-    for (t[p += n] = value; p > 1; p >>= 1) t[p>>1] = combine(t[p], t[p^1]);
-  }
+        int query(int v, int l, int r, int L, int R) {
+                if (L >= R) {
+                        return 0;
+                } 
+                if (l == L && r == R) {
+                        return t[v];
+                } 
+                int m = (l + r) / 2;
+                return merge(query(v * 2 + 1, l, m, L, min(m, R)),
+                             query(v * 2 + 2, m, r, max(m, L), R));
+        }
 
-  T query(int l, int r) {  // query on interval [l, r]
-    r++;
-    T resl = 0, resr = 0; // TODO: change based on what you want to query on
-    for (l += n, r += n; l < r; l >>= 1, r >>= 1) {
-      if (l & 1) resl = combine(resl, t[l++]);
-      if (r & 1) resr = combine(resr, t[--r]);
-    }
-    return combine(resl, resr);
-  }
+        void update(int p, int val) {
+                update(0, 0, n, p, val);
+        }
 
-  T combine(const T& a, const T& b) {
-    return a + b; // TODO: change based on what you want to query on
-  } 
+        int query(int l, int r) {
+                return query(0, 0, n, l, r);
+        }
 };
 
-
-#include <bits/stdc++.h>
-using namespace std;
-
-
-int main() {
-  int n = 20;
-  vector<int> arr;
-  for (int i = 0; i < n; i++) {
-    arr.push_back(i + 1);
-  }
-
-  segtree<int> st(n, arr);
-  for (int i = 0; i < n; i++) {
-    cout << st.query(i, i) << ' ';
-  }
-  cout << '\n';
-
-  st.modify(0, 2);
-
-  for (int i = 0; i < n; i++) {
-    cout << st.query(i, i) << ' ';
-  }
-  cout << '\n';
-
-
-  return 0;
-}

@@ -45,7 +45,7 @@ ll binpow(ll a, ll b) {
 
 // find mod inverse of a number. Uses eulaer's and fermat's little theorem so only works when 
 // mod is prime, if m is prime x^(-1) = x^(m-2)
-ll mod_inv(ll a) {
+ll inv(ll a) {
 	return binpow(a, MOD - 2);
 }
 
@@ -98,6 +98,21 @@ ll int_sqrt (ll x) {
   }
   return ans;
 }
+
+// catalan #s
+vector<ll> cat = {1};
+ll catalan(ll n) {
+    while (cat.size() <= n) {
+        ll res = 0;
+        for (int i = 0; i < cat.size(); i++) {
+            res = (res + cat[i] * cat[cat.size() - 1 - i] % MOD) % MOD;
+        }
+        cat.push_back(res);
+    }
+    return cat[n];
+}
+
+
 
 
 
