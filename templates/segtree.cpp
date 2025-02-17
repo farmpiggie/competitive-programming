@@ -14,7 +14,7 @@ struct segtree {
 
         segtree(int sz, const vector<int>& a) {
                 n = sz;
-                t = vector<T>(2 * n);
+                t = vector<int>(2 * n);
                 for (int i = 0; i < n; i++) {
                         t[n + i] = a[i];
                 }
@@ -28,14 +28,14 @@ struct segtree {
         }
 
         // = value for assignment, += value for increment
-        void update(int p, const int& value) 
+        void update(int p, const int& value) {
                 for (t[p += n] = value; p > 1; p >>= 1) {
                         t[p>>1] = combine(t[p], t[p^1]);
                 }
         }
 
-        T query(int l, int r) {  // query on interval [l, r)
-                T resl = 0, resr = 0; // TODO: change it based on what you need
+        int query(int l, int r) {  // query on interval [l, r)
+                int resl = 0, resr = 0; // TODO: change it based on what you need
                 for (l += n, r += n; l < r; l >>= 1, r >>= 1) {
                         if (l & 1) resl = combine(resl, t[l++]);
                         if (r & 1) resr = combine(resr, t[--r]);
@@ -43,7 +43,7 @@ struct segtree {
                 return combine(resl, resr);
         }
 
-        T combine(const int& a, const int& b) {
+        int combine(const int& a, const int& b) {
                 return a + b; // TODO: change it based on what you need 
         }
 };
